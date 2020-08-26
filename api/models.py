@@ -58,11 +58,22 @@ class BlackListType(models.Model):
         return self.name
 
 class BlackListItem(models.Model):
-    image = models.ImageField('Изображение превью 140x140)', upload_to='bl/', blank=False, null=True)
-    type = models.ForeignKey(BlackListType,on_delete=models.CASCADE,verbose_name='Тип',blank=False,null=True)
+    image = models.ImageField('Изображение превью 330x260)', upload_to='bl/', blank=False, null=True)
+
+    type = models.ForeignKey(BlackListType,on_delete=models.CASCADE,verbose_name='Тип',blank=False,null=True )
     name = models.CharField('Название', max_length=255, blank=False, null=True)
+    name_slug = models.CharField(max_length=255, blank=True, null=True, editable=False, db_index=True)
     reason = models.CharField('Причина', max_length=255, blank=False, null=True)
     contact = models.CharField('Контакты', max_length=255, blank=False, null=True)
+
+    details = RichTextUploadingField('Детали.', blank=False, null=True)
+    proofs = RichTextUploadingField('Доказаьельства.', blank=False, null=True)
+
+    created_at = models.DateTimeField('Создана', auto_now_add=True,null=True)
+
+    def save(self, *args, **kwargs):
+        self.name_slug = slugify(self.name)
+        super(BlackListItem, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name

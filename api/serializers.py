@@ -4,27 +4,35 @@ from .models import *
 
 
 class TagSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Tag
         fields = '__all__'
 
 
+class BlTypesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = '__all__'
+
+
+
+
 class BlItemSerializer(serializers.ModelSerializer):
-    type = serializers.SlugRelatedField(slug_field='name',read_only=True)
+    type = BlTypesSerializer(many=False)
     class Meta:
         model = BlackListItem
         fields = [
             'id',
             'image',
             'name',
+            'name_slug',
             'reason',
+            'details',
+            'proofs',
+            'created_at',
             'contact',
             'type',
         ]
-
-
-
 
 class PostSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)

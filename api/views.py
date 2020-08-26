@@ -38,10 +38,20 @@ class GetPost(generics.RetrieveAPIView):
     lookup_field = 'name_slug'
     serializer_class = PostSerializer
 
+class GetBlackListItem(generics.RetrieveAPIView):
+    queryset = BlackListItem.objects.filter()
+    lookup_field = 'name_slug'
+    serializer_class = BlItemSerializer
+
 
 class BlackListItems(generics.ListAPIView):
     queryset = BlackListItem.objects.all()
     serializer_class = BlItemSerializer
+    pagination_class = LargeResultsSetPagination
+
+class BlackListTypes(generics.ListAPIView):
+    queryset = BlackListType.objects.all()
+    serializer_class = BlTypesSerializer
     pagination_class = LargeResultsSetPagination
 
 
@@ -55,6 +65,28 @@ class GetPostsByTag(generics.ListAPIView):
         else:
             posts = Post.objects.all()
         return posts
+
+class BlackListFilter(generics.ListAPIView):
+    serializer_class = BlItemSerializer
+    pagination_class = LargeResultsSetPagination
+    def get_queryset(self):
+        type_id=self.request.query_params.get('type')
+        if type_id != 'all':
+            items = BlackListItem.objects.filter(type_id=type_id)
+        else:
+            items = BlackListItem.objects.all()
+        return items
+
+class BlackListSearch(generics.ListAPIView):
+    serializer_class = BlItemSerializer
+    pagination_class = LargeResultsSetPagination
+    def get_queryset(self):
+        query=self.request.query_params.get('query')
+        if query != '':
+            items = BlackListItem.objects.filter(contact__contains=query)
+        else:
+            items = BlackListItem.objects.all()
+        return items
 
 
 
